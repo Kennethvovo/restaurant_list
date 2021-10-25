@@ -19,7 +19,7 @@ app.get('/restaurants/:restaurant_id', (req, res) => {
   const restaurant = restaurantList.results.find((restaurant) => restaurant.id.toString() === req.params.restaurant_id)
   res.render('show', { restaurant: restaurant })
 })
-
+// 搜尋功能判斷
 app.get('/search', (req, res) => {
   const keyword = req.query.keyword.trim().toLowerCase()
   const restaurants = restaurantList.results.filter(
