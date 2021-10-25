@@ -17,14 +17,14 @@ app.get('/', (req, res) => {
 })
 app.get('/restaurants/:restaurant_id', (req, res) => {
   const restaurant = restaurantList.results.find((restaurant) => restaurant.id.toString() === req.params.restaurant_id)
-  console.log(restaurant)
   res.render('show', { restaurant: restaurant })
 })
 
 app.get('/search', (req, res) => {
   const keyword = req.query.keyword.trim().toLowerCase()
-  const restaurants = restaurantList.results.filter((restaurantItem) =>
-    restaurantItem.name.toLowerCase().includes(keyword)
+  const restaurants = restaurantList.results.filter(
+    (restaurantItem) =>
+      restaurantItem.name.toLowerCase().includes(keyword) || restaurantItem.category.toLowerCase().includes(keyword)
   )
   res.render('index', { restaurants, keyword: req.query.keyword.trim() })
 })
