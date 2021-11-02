@@ -23,7 +23,7 @@ A simple web application for my favourite restaurant.
 
 1. Open terminal and clone the repo to local
    ```
-   git clone
+   git clone  https://github.com/Kennethvovo/restaurant_list
    ```
 2. Move to repo file
    ```
