@@ -72,8 +72,9 @@
            Back</a>
             <a class='btn btn-primary mr-5' style='font-size:1.2em;'
               href='/restaurants/{{restaurant._id}}/edit'>Edit</a>
-            <button type='button' id='btn-delete' class='btn btn-danger far fa-trash-alt'
-              data-id="{{restaurant._id}}"></button>
+            <form action="/restaurants/{{ restaurant._id }}/delete" method="POST" style="display: inline;" class="btn btn-outline-danger">
+              <button type="submit">delete</button>
+            </form>
       </div>
     </div>
   </div>
