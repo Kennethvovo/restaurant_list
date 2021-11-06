@@ -5,6 +5,7 @@ const RestaurantList = require('./models/restaurant')
 const app = express()
 const port = 3000
 const bodyParser = require('body-parser')
+const restaurantList = require('./restaurant')
 app.use(bodyParser.urlencoded({ extended: true }))
 const mongoose = require('mongoose') // 載入 mongoose
 mongoose.connect('mongodb://localhost/restaurant_list') // 設定連線到 mongoDB
@@ -94,7 +95,17 @@ app.post('/restaurants/:id/delete', (req, res) => {
     .then(() => res.redirect('/'))
     .catch((error) => console.log(error))
 })
-
+app.get('/search', (req, res) => {
+  const keyword = req.query.keyword.toLowerCase().trim()
+  RestaurantList.find()
+    .lean()
+    .then((restaurants) => {
+      const searchedRestaurants = restaurants.filter((restaurant) => {
+        return restaurant.category.toLowerCase().includes(keyword) || restaurant.name.toLowerCase().includes(keyword)
+      })
+      res.render('index', { RestaurantList: searchedRestaurants, keyword })
+    })
+})
 // start and listen on the Express server
 app.listen(port, () => {
   console.log(`Express is listening on http://localhost:${port}`)
