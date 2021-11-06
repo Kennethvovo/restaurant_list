@@ -1,9 +1,11 @@
 // app.js
 // require packages used in the project
 const express = require('express')
-const restaurantList = require('./restaurant.json')
+const RestaurantList = require('./models/restaurant')
 const app = express()
 const port = 3000
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: true }))
 const mongoose = require('mongoose') // 載入 mongoose
 mongoose.connect('mongodb://localhost/restaurant_list') // 設定連線到 mongoDB
 // 取得資料庫連線狀態
@@ -25,23 +27,31 @@ app.set('view engine', 'handlebars')
 
 // routes setting
 app.get('/', (req, res) => {
-  res.render('index', { restaurants: restaurantList.results })
+  RestaurantList.find() // 取出 RestaurantList model 裡的所有資料
+    .lean() // 把 Mongoose 的 Model 物件轉換成乾淨的 JavaScript 資料陣列
+    .then((RestaurantList) => res.render('index', { RestaurantList })) // 將資料傳給 index 樣板
+    .catch((error) => console.error(error)) // 錯誤處理
 })
-app.get('/restaurants/:restaurant_id', (req, res) => {
-  const restaurant = restaurantList.results.find((restaurant) => restaurant.id.toString() === req.params.restaurant_id)
-  res.render('show', { restaurant: restaurant })
+
+// new 功能
+app.get('/restaurants/new', (req, res) => {
+  return res.render('new')
 })
-// 搜尋功能判斷
-app.get('/search', (req, res) => {
-  const keyword = req.query.keyword.trim().toLowerCase()
-  const restaurants = restaurantList.results.filter(
-    (restaurantItem) =>
-      restaurantItem.name.toLowerCase().includes(keyword) || restaurantItem.category.toLowerCase().includes(keyword)
-  )
-  res.render('index', { restaurants, keyword: req.query.keyword.trim() })
+app.post('/restaurants', (req, res) => {
+  return RestaurantList.create(req.body)
+    .then(() => res.redirect('/')) // 新增完成後導回首頁
+    .catch((error) => console.log(error))
 })
-// setting static files
+//setting static files
 app.use(express.static('public'))
+
+app.get('/restaurants/:id', (req, res) => {
+  const id = req.params.id
+  return RestaurantList.findById(id)
+    .lean()
+    .then((restaurant) => res.render('detail', { restaurant }))
+    .catch((error) => console.log(error))
+})
 
 // start and listen on the Express server
 app.listen(port, () => {
