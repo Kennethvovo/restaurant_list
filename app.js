@@ -7,11 +7,16 @@ const port = 3000
 const bodyParser = require('body-parser')
 const restaurantList = require('./restaurant')
 app.use(bodyParser.urlencoded({ extended: true }))
+
+// -----------------------------------
 const mongoose = require('mongoose') // 載入 mongoose
 mongoose.connect('mongodb://localhost/restaurant_list') // 設定連線到 mongoDB
 // 取得資料庫連線狀態
 const db = mongoose.connection
-
+// 載入 method-override
+const methodOverride = require('method-override')
+// 設定每一筆請求都會透過 methodOverride 進行前置處理
+app.use(methodOverride('_method'))
 // 連線異常
 db.on('error', () => {
   console.log('mongodb error!')
@@ -20,6 +25,7 @@ db.on('error', () => {
 db.once('open', () => {
   console.log('mongodb connected!')
 })
+// -----------------------------------
 // require handlebars in the project
 const exphbs = require('express-handlebars')
 
@@ -62,33 +68,18 @@ app.get('/restaurants/:id/edit', (req, res) => {
     .catch((error) => console.log(error))
 })
 
-app.post('/restaurants/:id/edit', (req, res) => {
+app.put('/restaurants/:id', (req, res) => {
   const id = req.params.id
-  const name = req.body.name
-  const name_en = req.body.name_en
-  const category = req.body.category
-  const phone = req.body.phone
-  const description = req.body.description
-  const image = req.body.image
-  const google_map = req.body.google_map
-  const location = req.body.location
   return RestaurantList.findById(id)
     .then((restaurant) => {
-      restaurant.name = name
-      restaurant.name_en = name_en
-      restaurant.category = category
-      restaurant.phone = phone
-      restaurant.description = description
-      restaurant.image = image
-      restaurant.google_map = google_map
-      restaurant.location = location
+      restaurant = Object.assign(restaurant, req.body)
       return restaurant.save()
     })
     .then(() => res.redirect(`/restaurants/${id}`))
     .catch((error) => console.log(error))
 })
 
-app.post('/restaurants/:id/delete', (req, res) => {
+app.delete('/restaurants/:id', (req, res) => {
   const id = req.params.id
   return RestaurantList.findById(id)
     .then((restaurant) => restaurant.remove())
