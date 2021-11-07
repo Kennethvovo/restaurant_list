@@ -1,48 +1,30 @@
-// app.js
-// require packages used in the project
 const express = require('express')
 const exphbs = require('express-handlebars')
 const methodOverride = require('method-override')
 const RestaurantList = require('./models/restaurant')
-
 const bodyParser = require('body-parser')
 const routes = require('./routes')
 
 const app = express()
 const port = 3000
-
-// -----------------------------------
-const mongoose = require('mongoose') // 載入 mongoose
-mongoose.connect('mongodb://localhost/restaurant_list') // 設定連線到 mongoDB
-// 取得資料庫連線狀態
-const db = mongoose.connection
-
+require('./config/mongoose')
 // 設定每一筆請求都會透過 methodOverride 進行前置處理
 app.use(methodOverride('_method'))
-// 連線異常
-db.on('error', () => {
-  console.log('mongodb error!')
-})
-// 連線成功
-db.once('open', () => {
-  console.log('mongodb connected!')
-})
-// -----------------------------------
-
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
-app.set('view engine', 'handlebars') /
-  app.get('/search', (req, res) => {
-    const keyword = req.query.keyword.toLowerCase().trim()
-    RestaurantList.find()
-      .lean()
-      .then((restaurants) => {
-        const searchedRestaurants = restaurants.filter((restaurant) => {
-          return restaurant.category.toLowerCase().includes(keyword) || restaurant.name.toLowerCase().includes(keyword)
-        })
-        res.render('index', { RestaurantList: searchedRestaurants, keyword })
+app.set('view engine', 'handlebars')
+app.get('/search', (req, res) => {
+  const keyword = req.query.keyword.toLowerCase().trim()
+  RestaurantList.find()
+    .lean()
+    .then((restaurants) => {
+      const searchedRestaurants = restaurants.filter((restaurant) => {
+        return restaurant.category.toLowerCase().includes(keyword) || restaurant.name.toLowerCase().includes(keyword)
       })
-  })
+      res.render('index', { RestaurantList: searchedRestaurants, keyword })
+    })
+})
 app.use(bodyParser.urlencoded({ extended: true }))
+
 //setting static files
 app.use(express.static('public'))
 app.use(routes)
