@@ -9,5 +9,17 @@ router.get('/', (req, res) => {
     .then((RestaurantList) => res.render('index', { RestaurantList })) // 將資料傳給 index 樣板
     .catch((error) => console.error(error)) // 錯誤處理
 })
+router.get('/search', (req, res) => {
+  const keyword = req.query.keyword.toLowerCase().trim()
+  RestaurantList.find()
+    .lean()
+    .then((restaurants) => {
+      const searchedRestaurants = restaurants.filter((restaurant) => {
+        return restaurant.category.toLowerCase().includes(keyword) || restaurant.name.toLowerCase().includes(keyword)
+      })
+      res.render('index', { RestaurantList: searchedRestaurants, keyword })
+    })
+})
+
 // 匯出路由器
 module.exports = router

@@ -1,36 +1,40 @@
-<header>
-  <!-- navigation -->
-  <nav class="navbar navbar-light bg-light">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <img src="https://assets-lighthouse.s3.amazonaws.com/uploads/image/file/6227/restaurant-list-logo.png"
-          width="30" height="30" class="d-inline-block align-top" alt="我的餐廳清單">
-        我的餐廳清單
-      </a>
-    </div>
-  </nav>
 
-  <div class="banner"></div>
-</header>
 
 <!-- search bar -->
-<div class="container search-bar">
-  <div class="search-bar-outer">
-    <div class="search-bar-inner">
-      <form action="/search">
-        <h4 class="mb-2">尋找餐廳：</h4>
-        <div class="input-group">
-          <input type="text" name="keyword" class="form-control" placeholder="輸入餐廳、分類" aria-label="Restaurant Name..."
-            value="{{keyword}}" aria-describedby="search-button">
-          <div class="input-group-append">
-            <button class="btn btn-major" type="submit" id="search-button"><i class="fas fa-search"></i></button>
+<div class='container search-bar'>
+  <div class='search-bar-outer'>
+    <div class='search-bar-inner'>
+      <form action='/'>
+        <h4 class='mb-2'>尋找餐廳：</h4>
+        <div class='input-group'>
+          <input type='text' name='keyword' class='form-control' placeholder='輸入餐廳、分類' aria-label='Restaurant Name...'
+            value='{{keyword}}' aria-describedby='search-button' />
+
+          <input type='hidden' name='modeSelected' aria-label='sort mode' value={{#if modeSelected}} "{{modeSelected}}"
+            {{else}} "A->Z" {{/if}} aria-describedby='search-button' />
+
+          <div class='input-group-append'>
+            <button class='btn btn-major mr-5' type='submit' id='search-button'><i class='fas fa-search'></i></button>
           </div>
-          <a href="./restaurants/new">Create</a>
+          <div class="dropdown mx-auto">
+            <button type="button" class="btn btn-secondary dropdown-toggle" id="dropdownMenuOffset"
+              data-toggle="dropdown" aria-expanded="false" data-offset="10,20">
+              {{#if modeSelected}} {{modeSelected}} {{else}} A->Z {{/if}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+              <a class="dropdown-item" href="/?keyword={{keyword}}&modeSelected=A->Z">A->Z</a>
+              <a class="dropdown-item" href="/?keyword={{keyword}}&modeSelected=Z->A">Z->A</a>
+              <a class="dropdown-item" href="/?keyword={{keyword}}&modeSelected=類別">類別</a>
+              <a class="dropdown-item" href="/?keyword={{keyword}}&modeSelected=地區">地區</a>
+            </div>
+          </div>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+
 {{#if RestaurantList}}
 <!-- restaurant list -->
 <div class="container mt-5">
@@ -55,10 +59,10 @@
               </span>
 
             </div>
-            <a href="./restaurants/{{ this._id }}">detail</a>
-            <a href="./restaurants/{{ this._id }}/edit">edit</a>
-            <form action="./restaurants/{{ this._id }}?_method=DELETE" method="POST" style="display: inline;" class="btn btn-outline-danger">
-              <button type="submit">delete</button>
+            <a href="./restaurants/{{ this._id }}"class='btn btn-secondary mr-5'>detail</a>
+            <a href="./restaurants/{{ this._id }}/edit" class="mr-5 btn btn-primary">edit</a>
+            <form action="./restaurants/{{ this._id }}?_method=DELETE" method="POST" style="display: inline;" >
+              <button type="submit" class="btn btn-danger far fa-trash-alt" ></button>
             </form>
           </div>
         </a>
